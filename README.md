@@ -23,14 +23,14 @@
  
   Select the option "OAuth 2 authorization without a callback URL" 
   
-  ##### Get your client_id and client_secret - it will at the applications dashboard and will be sent by email to.
+  ##### Get your client_id and client_secret.
   
   ##### Get your PIN
   https://api.imgur.com/oauth2/authorize?client_id=YOUR_CLIENT_ID_HERE&response_type=pin
 
   Authorize the application and copy your PIN
   
-  ##### Get your access_token:
+  ##### Get your access_token: Change with your information and paste in your terminal.
     curl -X POST -F "client_id=CLIENT_ID" \
                  -F "client_secret=CLIENT_SECRET" \
                  -F "pin=PIN" \
