@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# First you need install curl xclip xsel scrot
+# Then save this script as "imgur" on /bin/imgur
+# Make it executable with chmod +x /bin/imgur
+# Usage: imgur /home/pi/imagem.jpg # or you can change the image name and path on the line 9
+
+# Take screenshot using scrot and sleep 5 secs
+DISPLAY=:0 scrot /home/pi/imagem.jpg
+
+sleep 5
+
+# Set variables
+client_id=ee5d22e60102e14
+access_token=f21028aefd3ef4e0f1322413210ebf9fd5059bd8
+upload_connect_timeout=5
+upload_timeout=120
+album_id=HdQOc
+
+# Function to upload a path
+function upload {
+        curl -F "image=$1" -F "album=${album_id}" -H "Authorization: Bearer ${access_token}" https://api.imgur.com/3/image.xml
+}
+
+while [ $# -gt 0 ]; do
+        file="$1"
+        shift
+
+        if [[ "$file" =~ ^https?:// ]]; then
+                response=$(upload "$file") 2>/dev/null
+        else
+                if [ "$file" != "-" -a ! -f "$file" ]; then
+                        echo "File '$file' doesn't exist; skipping" >&2
+                        errors=true
+                        continue
+                fi
+                response=$(upload "@$file") 2>/dev/null
+        fi
+
+        if [ $? -ne 0 ]; then
+                echo "Upload failed..." >&2
+                errors=true
+                continue
+        elif echo "$response" | grep -q 'success="0"'; then
+                echo "Error message from imgur:" >&2
+                msg="${response##*<error>}"
+                echo "${msg%%</error>*}" >&2
+                errors=true
+                continue
+        fi
+
+        # Parse the response and output stuff
+        url="${response##*<link>}"
+        url="${url%%</link>*}"
+        delete_hash="${response##*<deletehash>}"
+        delete_hash="${delete_hash%%</deletehash>*}"
+        echo "$(tput setaf 1)imgur direct url:$(tput sgr0) $url"
+        echo "$(tput setaf 1)Delete page:$(tput sgr0) https://imgur.com/delete/$delete_hash" >&2
+
+done
+
+# General information for development (newbies)
+# > access_token:f21028aefd3ef4e0f1322413210ebf9fd5059bd8
+# > expires_in:2419200
+# > token_type:bearer
+# > refresh_token:3ddd1d1a5269b0695b47a5e5baa828c10cd9#82ea
+# > account_id:67920665
+# > account_username:oozotv
+# To get the PIN: https://api.imgur.com/oauth2/authorize?client_id=CLIENT_ID&response_type=pin
+# To get the access_token:
+# curl -X POST -F "client_id=5425fecf8863b8c" \
+#              -F "client_secret=7fb0135a91ea0a31d86ddf75e8d9a4bddba6229f" \
+#              -F "pin=PIN_AQUI" \
+#              -F "grant_type=pin" https://api.imgur.com/oauth2/token
