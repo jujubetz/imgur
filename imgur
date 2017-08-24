@@ -11,8 +11,8 @@ DISPLAY=:0 scrot /home/pi/imagem.jpg
 sleep 5
 
 # Set variables
-client_id=ee5d22e60102e14
-access_token=f21028aefd3ef4e0f1322413210ebf9fd5059bd8
+client_id=
+access_token=
 upload_connect_timeout=5
 upload_timeout=120
 album_id=HdQOc
@@ -58,17 +58,3 @@ while [ $# -gt 0 ]; do
         echo "$(tput setaf 1)Delete page:$(tput sgr0) https://imgur.com/delete/$delete_hash" >&2
 
 done
-
-# General information for development (newbies)
-# > access_token:f21028aefd3ef4e0f1322413210ebf9fd5059bd8
-# > expires_in:2419200
-# > token_type:bearer
-# > refresh_token:3ddd1d1a5269b0695b47a5e5baa828c10cd9#82ea
-# > account_id:67920665
-# > account_username:oozotv
-# To get the PIN: https://api.imgur.com/oauth2/authorize?client_id=CLIENT_ID&response_type=pin
-# To get the access_token:
-# curl -X POST -F "client_id=5425fecf8863b8c" \
-#              -F "client_secret=7fb0135a91ea0a31d86ddf75e8d9a4bddba6229f" \
-#              -F "pin=PIN_AQUI" \
-#              -F "grant_type=pin" https://api.imgur.com/oauth2/token
